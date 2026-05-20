@@ -1,3 +1,4 @@
+//
 //package com.framework.keywords;
 //
 //import com.framework.driver.DriverFactory;
@@ -7,10 +8,6 @@
 //public class ActionKeywords {
 //
 //    WebDriver driver;
-//
-//    public ActionKeywords(WebDriver driver) {
-//        this.driver = driver;
-//    }
 //
 //    public void execute(String keyword, String locator, String value) {
 //
@@ -22,15 +19,18 @@
 //                break;
 //
 //            case "openUrl":
+//                driver = DriverFactory.driver;
 //                driver.get(value);
 //                break;
 //
-//            case "click":
-//                driver.findElement(ObjectRepository.getLocator(locator)).click();
+//            case "enterText":
+//                driver = DriverFactory.driver;
+//                driver.findElement(ObjectRepository.getLocator(locator)).sendKeys(value);
 //                break;
 //
-//            case "enterText":
-//                driver.findElement(ObjectRepository.getLocator(locator)).sendKeys(value);
+//            case "click":
+//                driver = DriverFactory.driver;
+//                driver.findElement(ObjectRepository.getLocator(locator)).click();
 //                break;
 //
 //            case "wait":
@@ -39,61 +39,89 @@
 //                } catch (Exception e) {}
 //                break;
 //
+//            case "quit":
+//                driver = DriverFactory.driver;
+//                driver.quit();
+//                break;
+//              
+//
 //            default:
-//                System.out.println("Invalid keyword: " + keyword);
+//                throw new RuntimeException("Invalid keyword: " + keyword);
 //        }
 //    }
 //}
 
-
-
 package com.framework.keywords;
 
+import com.framework.keywords.ReusableFunctions;
 import com.framework.driver.DriverFactory;
-import com.framework.utils.ObjectRepository;
 import org.openqa.selenium.WebDriver;
 
 public class ActionKeywords {
 
     WebDriver driver;
+    ReusableFunctions rf;
+
+    public ActionKeywords() {
+        driver = DriverFactory.driver;
+        rf = new ReusableFunctions(driver);
+    }
 
     public void execute(String keyword, String locator, String value) {
 
-        switch (keyword) {
+        driver = DriverFactory.driver;
+        rf = new ReusableFunctions(driver); // refresh driver
 
-            case "openBrowser":
-                DriverFactory.initDriver(value);
-                driver = DriverFactory.driver;
-                break;
+        if (keyword.equalsIgnoreCase("openBrowser")) {
+            DriverFactory.initDriver(value);
 
-            case "openUrl":
-                driver = DriverFactory.driver;
-                driver.get(value);
-                break;
+        } else if (keyword.equalsIgnoreCase("openUrl")) {
+            rf.openUrl(value);
 
-            case "enterText":
-                driver = DriverFactory.driver;
-                driver.findElement(ObjectRepository.getLocator(locator)).sendKeys(value);
-                break;
+        } else if (keyword.equalsIgnoreCase("click")) {
+        	
+        	try {
+        
+            rf.click(locator);
+        	}catch(Exception e)
+        	{
+        		System.out.println("not clicked");
+        	}
+            
+        
+        } else if (keyword.equalsIgnoreCase("enterText")) {
+            rf.enterText(locator, value);
 
-            case "click":
-                driver = DriverFactory.driver;
-                driver.findElement(ObjectRepository.getLocator(locator)).click();
-                break;
+        } else if (keyword.equalsIgnoreCase("scrollToElement")) {
+            rf.scrollToElement(locator);
 
-            case "wait":
-                try {
-                    Thread.sleep(Long.parseLong(value));
-                } catch (Exception e) {}
-                break;
+        } else if (keyword.equalsIgnoreCase("wait")) {
+            rf.waitTime(value);
 
-            case "quit":
-                driver = DriverFactory.driver;
-                driver.quit();
-                break;
+        } else if (keyword.equalsIgnoreCase("quit")) {
+            driver.quit();
 
-            default:
-                throw new RuntimeException("Invalid keyword: " + keyword);
+        } 
+        else if(keyword.equalsIgnoreCase("checkVisibilityClick"))
+        {
+        	rf.clickWhenVisible(locator);
         }
+        else if(keyword.equalsIgnoreCase("checkVisibility"))
+        {
+        	rf.checkVisibilityOfElement(locator);
+        }
+        else if(keyword.equalsIgnoreCase("JavascriptClick"))
+        {
+        	rf.jsclick(locator);
+        }
+        else if(keyword.equalsIgnoreCase("checkvisibility"))
+        {
+        	rf.checkvisibility(locator);
+        }
+        else {
+            throw new RuntimeException("Invalid keyword: " + keyword);
+        }
+        
+        
     }
 }
