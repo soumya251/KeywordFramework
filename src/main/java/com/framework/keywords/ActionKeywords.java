@@ -61,16 +61,19 @@ public class ActionKeywords {
 
     WebDriver driver;
     ReusableFunctions rf;
-
+   
     public ActionKeywords() {
         driver = DriverFactory.driver;
         rf = new ReusableFunctions(driver);
+       
     }
 
-    public void execute(String keyword, String locator, String value) {
+    public void execute(String keyword, String locator, String value, String pageName,String run
+    		) throws Exception {
 
         driver = DriverFactory.driver;
-        rf = new ReusableFunctions(driver); // refresh driver
+       rf = new ReusableFunctions(driver);
+ 
 
         if (keyword.equalsIgnoreCase("openBrowser")) {
             DriverFactory.initDriver(value);
@@ -85,6 +88,8 @@ public class ActionKeywords {
             rf.click(locator);
         	}catch(Exception e)
         	{
+        		String msg=e.getMessage();
+        		System.out.println(msg);
         		System.out.println("not clicked");
         	}
             
@@ -102,9 +107,12 @@ public class ActionKeywords {
             driver.quit();
 
         } 
-        else if(keyword.equalsIgnoreCase("checkVisibilityClick"))
+        else if(keyword.equalsIgnoreCase("close"))
         {
-        	rf.clickWhenVisible(locator);
+        }
+        else if(keyword.equalsIgnoreCase("SwitchOnwindow"))
+        {
+        	rf.SwitchOnwindow(locator);
         }
         else if(keyword.equalsIgnoreCase("checkVisibility"))
         {
@@ -118,10 +126,47 @@ public class ActionKeywords {
         {
         	rf.checkvisibility(locator);
         }
+        // *
+        else if(keyword.equalsIgnoreCase("Check_visibility"))
+        {
+        	rf.checkvisibility(locator);
+        }
+        else if(keyword.equalsIgnoreCase("SwitchToParent"))
+        {
+        	rf.windowswitchtoparent(value);
+        }
+        else if(keyword.equalsIgnoreCase("NavigateBack"))
+        {
+        	rf.navigateback(value);
+        }
+        else if(keyword.equalsIgnoreCase("FetchGmailOtp"))
+        {    
+        	String email="";
+        	String password="";
+        	String otp=rf.fetchOtp(email,password);
+        	System.out.println(otp);
+        }
+//        else if(keyword.equalsIgnoreCase("movepage"))
+//        {
+//        	rf.movepage(pageName);
+//        
+//        }
+        
+        else if(keyword.equalsIgnoreCase("compareAndAddToCart"))
+        {
+        	int count = 8;
+        	try { count = Integer.parseInt(value);
+        	} catch(Exception ex) {}
+        	rf.compareAndAddToCart(count);
+        }
+        
         else {
             throw new RuntimeException("Invalid keyword: " + keyword);
         }
         
+       
+        
         
     }
+    // *- not sure may be wrong or right
 }
